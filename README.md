@@ -185,7 +185,7 @@ The model **handobj_100K** is trained on trainset of **100K** youtube frames.
 
 The model **handobj_100K+ego** is trained on trainset of **100K** plus additional **egocentric** data we annotated, which works much better on egocentric data. 
 
-We provide the frame names of the egocentric data we used here: [trainval.txt](https://github.com/ddshan/Hand_Object_Detector/blob/master/assets/data_ego_framename/trainval.txt), [test.txt](https://github.com/ddshan/Hand_Object_Detector/blob/master/assets/data_ego_framename/test.txt). This split is backwards compatible with
+We provide the frame names of the egocentric data we used here: [trainval.txt](https://github.com/ddshan/hand_object_detector/blob/master/assets/data_ego_framename/trainval.txt), [test.txt](https://github.com/ddshan/hand_object_detector/blob/master/assets/data_ego_framename/test.txt). This split is backwards compatible with
 the [Epic-Kitchens2018](https://epic-kitchens.github.io/2018) (EK), [EGTEA](http://cbs.ic.gatech.edu/fpv/), and [CharadesEgo](https://prior.allenai.org/projects/charades-ego) (CE).
 
 
@@ -197,7 +197,7 @@ Prepare and save pascal-voc format data in **data/** folder:
 ```
 mkdir data
 ```
-You can download our prepared pascal-voc format data from [pascal_voc_format.zip]() (see more of our downloads on our [project and dataset webpage](http://fouheylab.eecs.umich.edu/~dandans/projects/100DOH/download.html)).
+You can download our prepared pascal-voc format data from [pascal_voc_format.zip](https://fouheylab.eecs.umich.edu/~dandans/projects/100DOH/downloads/pascal_voc_format.zip) (see more of our downloads on our [project and dataset webpage](http://fouheylab.eecs.umich.edu/~dandans/projects/100DOH/download.html)).
 
 
 ### Download pre-trained Resnet-101 model
