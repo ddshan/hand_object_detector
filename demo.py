@@ -25,7 +25,7 @@ from PIL import Image
 
 import torchvision.transforms as transforms
 import torchvision.datasets as dset
-from scipy.misc import imread
+# from scipy.misc import imread
 from roi_data_layer.roidb import combined_roidb
 from roi_data_layer.roibatchLoader import roibatchLoader
 from model.utils.config import cfg, cfg_from_file, cfg_from_list, get_output_dir
@@ -260,14 +260,9 @@ if __name__ == '__main__':
         # Load the demo image
         else:
           im_file = os.path.join(args.image_dir, imglist[num_images])
-          im_in = np.array(imread(im_file))
-          # resize
-          # im_in = np.array(Image.fromarray(im_in).resize((640, 360)))
-        if len(im_in.shape) == 2:
-          im_in = im_in[:,:,np.newaxis]
-          im_in = np.concatenate((im_in,im_in,im_in), axis=2)
-        # rgb -> bgr
-        im = im_in[:,:,::-1]
+          im_in = cv2.imread(im_file)
+        # bgr
+        im = im_in
 
         blobs, im_scales = _get_image_blob(im)
         assert len(im_scales) == 1, "Only single-image batch implemented"
