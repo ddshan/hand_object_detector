@@ -137,7 +137,7 @@ def vis_detections_filtered_objects_PIL(im, obj_dets, hand_dets, thresh_hand=0.8
         
 
     elif hand_dets is not None:
-        image = vis_detections_PIL(im, 'hand', hand_dets, thresh_hand)
+        image = vis_detections_PIL(im, 'hand', hand_dets, thresh_hand, font_path)
         
     return image
 
