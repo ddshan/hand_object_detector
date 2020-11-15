@@ -96,13 +96,13 @@ def vis_detections_filtered_objects(im, obj_dets, hand_dets, thresh=0.8):
 
 
 
-def vis_detections_filtered_objects_PIL(im, obj_dets, hand_dets, thresh_hand=0.8, thresh_obj=0.01):
+def vis_detections_filtered_objects_PIL(im, obj_dets, hand_dets, thresh_hand=0.8, thresh_obj=0.01, font_path='lib/model/utils/times_b.ttf'):
 
     # convert to PIL
     im = im[:,:,::-1]
     image = Image.fromarray(im).convert("RGBA")
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype('lib/model/utils/times_b.ttf', size=30)
+    font = ImageFont.truetype(font_path, size=30)
     width, height = image.size 
 
     if (obj_dets is not None) and (hand_dets is not None):
@@ -141,12 +141,12 @@ def vis_detections_filtered_objects_PIL(im, obj_dets, hand_dets, thresh_hand=0.8
         
     return image
 
-def vis_detections_PIL(im, class_name, dets, thresh=0.8):
+def vis_detections_PIL(im, class_name, dets, thresh=0.8, font_path='lib/model/utils/times_b.ttf'):
     """Visual debugging of detections."""
     
     image = Image.fromarray(im).convert("RGBA")
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype('lib/model/utils/times_b.ttf', size=30)
+    font = ImageFont.truetype(font_path, size=30)
     width, height = image.size
     
     for hand_idx, i in enumerate(range(np.minimum(10, dets.shape[0]))):
