@@ -10,6 +10,7 @@ from __future__ import print_function
 import _init_paths
 import os
 import sys
+import json
 import numpy as np
 import argparse
 import pprint
@@ -20,7 +21,7 @@ import torch
 from torch.autograd import Variable
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F 
+import torch.nn.functional as F
 from PIL import Image
 
 import torchvision.transforms as transforms
@@ -71,7 +72,10 @@ def parse_args():
   parser.add_argument('--save_dir', dest='save_dir',
                       help='directory to save results',
                       default="images_det")
-  parser.add_argument('--cuda', dest='cuda', 
+  parser.add_argument('--det_dir', dest='det_dir',
+                      help='directory to save detections',
+                      default=None)
+  parser.add_argument('--cuda', dest='cuda',
                       help='whether use CUDA',
                       action='store_true')
   parser.add_argument('--mGPUs', dest='mGPUs',
@@ -170,8 +174,8 @@ if __name__ == '__main__':
     raise Exception('There is no input directory for loading network from ' + model_dir)
   load_name = os.path.join(model_dir, 'faster_rcnn_{}_{}_{}.pth'.format(args.checksession, args.checkepoch, args.checkpoint))
 
-  pascal_classes = np.asarray(['__background__', 'targetobject', 'hand']) 
-  args.set_cfgs = ['ANCHOR_SCALES', '[8, 16, 32, 64]', 'ANCHOR_RATIOS', '[0.5, 1, 2]'] 
+  pascal_classes = np.asarray(['__background__', 'targetobject', 'hand'])
+  args.set_cfgs = ['ANCHOR_SCALES', '[8, 16, 32, 64]', 'ANCHOR_RATIOS', '[0.5, 1, 2]']
 
   # initilize the network here.
   if args.net == 'vgg16':
@@ -205,7 +209,7 @@ if __name__ == '__main__':
   im_info = torch.FloatTensor(1)
   num_boxes = torch.LongTensor(1)
   gt_boxes = torch.FloatTensor(1)
-  box_info = torch.FloatTensor(1) 
+  box_info = torch.FloatTensor(1)
 
   # ship to cuda
   if args.cuda > 0:
@@ -225,7 +229,7 @@ if __name__ == '__main__':
 
     start = time.time()
     max_per_image = 100
-    thresh_hand = args.thresh_hand 
+    thresh_hand = args.thresh_hand
     thresh_obj = args.thresh_obj
     vis = args.vis
 
@@ -278,7 +282,7 @@ if __name__ == '__main__':
                 im_info.resize_(im_info_pt.size()).copy_(im_info_pt)
                 gt_boxes.resize_(1, 1, 5).zero_()
                 num_boxes.resize_(1).zero_()
-                box_info.resize_(1, 1, 5).zero_() 
+                box_info.resize_(1, 1, 5).zero_()
 
         # pdb.set_trace()
         det_tic = time.time()
@@ -286,7 +290,7 @@ if __name__ == '__main__':
         rois, cls_prob, bbox_pred, \
         rpn_loss_cls, rpn_loss_box, \
         RCNN_loss_cls, RCNN_loss_bbox, \
-        rois_label, loss_list = fasterRCNN(im_data, im_info, gt_boxes, num_boxes, box_info) 
+        rois_label, loss_list = fasterRCNN(im_data, im_info, gt_boxes, num_boxes, box_info)
 
         scores = cls_prob.data
         boxes = rois.data[:, :, 1:5]
@@ -296,11 +300,11 @@ if __name__ == '__main__':
         offset_vector = loss_list[1][0].detach() # offset vector (factored into a unit vector and a magnitude)
         lr_vector = loss_list[2][0].detach() # hand side info (left/right)
 
-        # get hand contact 
+        # get hand contact
         _, contact_indices = torch.max(contact_vector, 2)
         contact_indices = contact_indices.squeeze(0).unsqueeze(-1).float()
 
-        # get hand side 
+        # get hand side
         lr = torch.sigmoid(lr_vector) > 0.5
         lr = lr.squeeze(0).float()
 
@@ -358,7 +362,7 @@ if __name__ == '__main__':
                 cls_boxes = pred_boxes[inds, :]
               else:
                 cls_boxes = pred_boxes[inds][:, j * 4:(j + 1) * 4]
-              
+
               cls_dets = torch.cat((cls_boxes, cls_scores.unsqueeze(1), contact_indices[inds], offset_vector.squeeze(0)[inds], lr[inds]), 1)
               cls_dets = cls_dets[order]
               keep = nms(cls_boxes[order, :], cls_scores[order], cfg.TEST.NMS)
@@ -367,10 +371,19 @@ if __name__ == '__main__':
                 obj_dets = cls_dets.cpu().numpy()
               if pascal_classes[j] == 'hand':
                 hand_dets = cls_dets.cpu().numpy()
-              
+
         if vis:
           # visualization
           im2show = vis_detections_filtered_objects_PIL(im2show, obj_dets, hand_dets, thresh_hand, thresh_obj)
+        if args.det_dir:
+          os.makedirs(args.det_dir, exist_ok=True)
+          dets_path = os.path.join(args.det_dir, os.path.basename(os.path.splitext(im_file)[0])+'.json')
+          with open(dets_path, 'w') as f:
+              json.dump({
+                  'hand_dets':hand_dets.tolist() if hand_dets is not None else hand_dets,
+                  'obj_dets':obj_dets.tolist() if obj_dets is not None else obj_dets
+                  },
+                  f)
 
         misc_toc = time.time()
         nms_time = misc_toc - misc_tic
@@ -381,7 +394,7 @@ if __name__ == '__main__':
             sys.stdout.flush()
 
         if vis and webcam_num == -1:
-            
+
             folder_name = args.save_dir
             os.makedirs(folder_name, exist_ok=True)
             result_path = os.path.join(folder_name, imglist[num_images][:-4] + "_det.png")
@@ -395,7 +408,7 @@ if __name__ == '__main__':
             print('Frame rate:', frame_rate)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-              
+
     if webcam_num >= 0:
         cap.release()
         cv2.destroyAllWindows()
