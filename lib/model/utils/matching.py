@@ -20,7 +20,7 @@ def filter_object(obj_dets, hand_dets):
             continue
         else: # hand is in-contact
             hand_cc = np.array(calculate_center(hand_dets[i,:4])) # hand center points
-            point_cc = np.array([(hand_cc[0]+hand_dets[i,6]*10000*hand_dets[i,7]), (hand_cc[1]+hand_dets[i,6]*10000*hand_dets[i,8])]) # extended points (hand center + offset)
+            point_cc = np.array([(hand_cc[0]+hand_dets[i,6]*1000*hand_dets[i,7]), (hand_cc[1]+hand_dets[i,6]*1000*hand_dets[i,8])]) # extended points (hand center + offset)
             dist = np.sum((object_cc_list - point_cc)**2,axis=1)
             dist_min = np.argmin(dist) # find the nearest 
             img_obj_id.append(dist_min)
