@@ -96,7 +96,7 @@ def vis_detections_filtered_objects(im, obj_dets, hand_dets, thresh=0.8):
 
 
 
-def vis_detections_filtered_objects_PIL(im, obj_dets, hand_dets, thresh_hand=0.8, thresh_obj=0.01, font_path='lib/model/utils/times_b.ttf'):
+def vis_detections_filtered_objects_PIL(im, obj_dets, hand_dets, thresh_hand=0.8, thresh_obj=0.01, font_path='./hand_object_detector/lib/model/utils/times_b.ttf'):
 
     # convert to PIL
     im = im[:,:,::-1]
