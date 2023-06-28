@@ -1,10 +1,12 @@
 // Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 #include <ATen/ATen.h>
 #include <ATen/cuda/CUDAContext.h>
+#include <ATen/cuda/CUDAEvent.h>
 
-#include <THC/THC.h>
+//#include <THC/THC.h>
 #include <THC/THCAtomics.cuh>
 #include <THC/THCDeviceUtils.cuh>
+#include "common.hpp"
 
 // TODO make it in a common file
 #define CUDA_1D_KERNEL_LOOP(i, n)                            \
@@ -276,7 +278,7 @@ at::Tensor ROIAlign_forward_cuda(const at::Tensor& input,
   dim3 block(512);
 
   if (output.numel() == 0) {
-    THCudaCheck(cudaGetLastError());
+    AT_CUDA_CHECK(cudaGetLastError());
     return output;
   }
 
@@ -294,7 +296,7 @@ at::Tensor ROIAlign_forward_cuda(const at::Tensor& input,
          rois.contiguous().data<scalar_t>(),
          output.data<scalar_t>());
   });
-  THCudaCheck(cudaGetLastError());
+  AT_CUDA_CHECK(cudaGetLastError());
   return output;
 }
 
@@ -322,7 +324,7 @@ at::Tensor ROIAlign_backward_cuda(const at::Tensor& grad,
 
   // handle possibly empty gradients
   if (grad.numel() == 0) {
-    THCudaCheck(cudaGetLastError());
+    AT_CUDA_CHECK(cudaGetLastError());
     return grad_input;
   }
 
@@ -341,6 +343,6 @@ at::Tensor ROIAlign_backward_cuda(const at::Tensor& grad,
          grad_input.data<scalar_t>(),
          rois.contiguous().data<scalar_t>());
   });
-  THCudaCheck(cudaGetLastError());
+  AT_CUDA_CHECK(cudaGetLastError());
   return grad_input;
 }
