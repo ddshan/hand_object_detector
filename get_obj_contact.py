@@ -218,7 +218,12 @@ def get_obj_contact(hand_traj, args):
                     cls_dets = cls_dets[keep.view(-1).long()]
                     if pascal_classes[j] == 'targetobject':
                         obj_dets = cls_dets.cpu().numpy()
-                        contact = 1
+                        if 0 in lr[inds].cpu().numpy() and args.hand == 'left_hand':
+                            contact = 1
+                        elif 1 in lr[inds].cpu().numpy() and args.hand == 'right_hand':
+                            contact = 1
+                        else:
+                            contact = 0
                     if pascal_classes[j] == 'hand':
                         hand_dets = cls_dets.cpu().numpy()
         
