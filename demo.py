@@ -38,11 +38,15 @@ from model.utils.blob import im_list_to_blob
 from model.faster_rcnn.vgg16 import vgg16
 from model.faster_rcnn.resnet import resnet
 import pdb
+import re
 
 try:
     xrange          # Python 2
 except NameError:
     xrange = range  # Python 3
+
+def num_sort(input_string):
+    return list(map(int, re.findall(r'\d+', input_string)))[0]
 
 
 def parse_args():
@@ -149,8 +153,7 @@ def _get_image_blob(im):
 
   return blob, np.array(im_scale_factors)
 
-if __name__ == '__main__':
-
+def main():
   args = parse_args()
 
   # print('Called with args:')
@@ -241,10 +244,12 @@ if __name__ == '__main__':
       print(f'image dir = {args.image_dir}')
       print(f'save dir = {args.save_dir}')
       imglist = os.listdir(args.image_dir)
+      imglist = sorted(imglist, key=num_sort, reverse=True)
       num_images = len(imglist)
 
     print('Loaded Photo: {} images.'.format(num_images))
 
+    contact = []
 
     while (num_images >= 0):
         total_tic = time.time()
@@ -343,6 +348,7 @@ if __name__ == '__main__':
         if vis:
             im2show = np.copy(im)
         obj_dets, hand_dets = None, None
+        obj_detect = 0
         for j in xrange(1, len(pascal_classes)):
             # inds = torch.nonzero(scores[:,j] > thresh).view(-1)
             if pascal_classes[j] == 'hand':
@@ -365,12 +371,20 @@ if __name__ == '__main__':
               cls_dets = cls_dets[keep.view(-1).long()]
               if pascal_classes[j] == 'targetobject':
                 obj_dets = cls_dets.cpu().numpy()
+                # print(imglist[num_images])
+                obj_detect = 1
               if pascal_classes[j] == 'hand':
                 hand_dets = cls_dets.cpu().numpy()
-              
+
+        contact.append(obj_detect)
         if vis:
           # visualization
           im2show = vis_detections_filtered_objects_PIL(im2show, obj_dets, hand_dets, thresh_hand, thresh_obj)
+
+          # if contact_curr:
+          #   contact.append(1)
+          # else:
+          #   contact.append(0)
 
         misc_toc = time.time()
         nms_time = misc_toc - misc_tic
@@ -395,7 +409,13 @@ if __name__ == '__main__':
             print('Frame rate:', frame_rate)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-              
+    print(contact)
+    print(len(contact))
     if webcam_num >= 0:
         cap.release()
         cv2.destroyAllWindows()
+
+
+
+if __name__ == '__main__':
+  main()

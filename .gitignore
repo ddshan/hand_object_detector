@@ -16,7 +16,16 @@ demo/
 compare/
 
 # images/
-images_det/
+images_*/
+imgs_*/
+imgs/
+
+# archived files
+archive/
+
+# packages from other repos
+frankmocap/
+hand_object_detector/
 
 models/*
 predata_dandan/multitask/*.json
