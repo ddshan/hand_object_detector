@@ -17,12 +17,23 @@ More information can be found at our:
 
 
 ## Prerequisites
+[New] Now, it is compatible with newer pytorch version. Thanks [ajonnavittula](https://github.com/ajonnavittula) and [relh](https://github.com/relh) for helping figure out the compile files.
+Create a conda env called handobj_new, install pytorch-1.12.1, cuda-11.3:
+* python=3.8
+* cudatoolkit=11.3
+* pytorch=1.12.1
+```
+conda create --name handobj_new python=3.8
+conda activate handobj_new
+conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch
+```
 
+
+
+[Old, deprecated] Create a conda env called handobj, install pytorch-1.0.1, cuda-10.0:
 * Python 3.6
 * Pytorch 1.0
 * CUDA 10.0
-
-Create a new conda called handobj, install pytorch-1.0.1 and cuda-10.0:
 ```
 conda create --name handobj python=3.6
 conda activate handobj

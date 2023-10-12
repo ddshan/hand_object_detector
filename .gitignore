@@ -15,7 +15,7 @@ data_to_release/
 demo/
 compare/
 
-# images/
+images/
 images_det/
 
 models/*
