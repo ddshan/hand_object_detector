@@ -278,6 +278,8 @@ CUDA_VISIBLE_DEVICES=0 python demo.py --cuda --checkepoch=xxx --checkpoint=xxx
 * hand_dets: detected results for hands, [boxes(4), score(1), state(1), offset_vector(3), left/right(1)]
 * obj_dets: detected results for object, [boxes(4), score(1), <em>state(1), offset_vector(3), left/right(1)</em>]
 
+Use `--det_dir <directory>` option in `demo.py` to dump the hand_dets and obj_dets to this directory.
+
 We did **not** train the contact_state, offset_vector and hand_side part for objects. We keep them just to make the data format consistent. So, only use the bbox and confidence score infomation for objects.  
 
 **Matching**:
